@@ -1,0 +1,9 @@
+{
+  "listen": ":5060",
+  "domain": "pbx.local",
+  "registration_seconds": 300,
+  "users": {
+    "101": "ALTERE-SENHA-FORTE-INTERFONE",
+    "102": "ALTERE-SENHA-FORTE-TELEFONE"
+  }
+}
