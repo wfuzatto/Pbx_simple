@@ -1,0 +1,31 @@
+name: Build Windows PBX
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-and-build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Testar protocolo SIP
+        run: go test -race ./...
+      - name: Compilar executavel minimo Windows x64
+        shell: pwsh
+        run: |
+          $env:CGO_ENABLED = '0'
+          go build -trimpath -ldflags="-s -w" -o Pbx_simple.exe .
+          New-Item -ItemType Directory -Path dist -Force | Out-Null
+          Copy-Item Pbx_simple.exe,config.example.json,install.ps1,uninstall.ps1,README.md dist
+          Compress-Archive -Path dist/* -DestinationPath Pbx_simple_Windows_x64.zip -Force
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Pbx_simple_Windows_x64
+          path: Pbx_simple_Windows_x64.zip
+          retention-days: 30
